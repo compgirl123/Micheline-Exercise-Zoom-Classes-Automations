@@ -7,18 +7,19 @@ function getCalendarZoomEvent(){
   var thurs_date = thurs_date_object.split(" ");
   var fri_date = fri_date_object.split(" ");
   var events = clau_calendar.getEvents(new Date(thurs_date[1] + " "+ thurs_date[2] + " "+ thurs_date[3]), new Date(fri_date[1] + " "+ fri_date[2] + " "+ fri_date[3]));
-  var testevent = clau_calendar.getEvents(new Date("October 29 2021"), new Date("October 30 2021"));
+  var testevent = clau_calendar.getEvents(new Date("Nov 4 2021"), new Date("Nov 5 2021"));
   var zoom_meeting = [];
   
-  for (var event = 0; event< events.length;event++){
-    Logger.log(events[event].getTitle()); // use this at end of october
-    Logger.log(events[event].getDescription());
-    if (testevent[0].getTitle() == "Micheline Zoom Zumba"){
+  for (var event = 0; event < testevent.length;event++){
+    /*Logger.log(events[event].getTitle()); // use this at end of october
+    Logger.log(events[event].getDescription());*/
+    Logger.log(testevent[event].getTitle());
+    if (testevent[event].getTitle() == "Micheline Zoom Tonus"){
       // write actual code here
-      var meeting_link = testevent[0].getDescription().split("Meeting")[1];
-      var split1 = testevent[0].getDescription().split("Meeting ID:")[1];
+      var meeting_link = testevent[event].getDescription().split("Meeting")[1];
+      var split1 = testevent[event].getDescription().split("Meeting ID:")[1];
       var meetingid = split1.split("Passcode:")[0].trim(); 
-      var split3 = testevent[0].getDescription().split("Passcode:")[1];
+      var split3 = testevent[event].getDescription().split("Passcode:")[1];
       var password = split3.split("One tap mobile")[0].trim();
       zoom_meeting.push(meetingid,password,meeting_link);
     }
