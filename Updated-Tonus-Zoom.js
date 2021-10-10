@@ -1,3 +1,17 @@
+function getThursday(d) {
+  var d = new Date();
+  d.setDate(d.getDate() + (((4 + 7 - d.getDay()) % 7) || 7));
+  Logger.log(d);
+  return d;
+}
+
+function getFriday(d) {
+  var d = new Date();
+  d.setDate(d.getDate() + (((5 + 7 - d.getDay()) % 7) || 7));
+  Logger.log(d);
+  return d;
+}
+
 function getCalendarZoomEvent(){
   // look at calendar and get event info.
   // getting my email's calendar and events
@@ -11,8 +25,6 @@ function getCalendarZoomEvent(){
   var zoom_meeting = [];
   
   for (var event = 0; event < testevent.length;event++){
-    /*Logger.log(events[event].getTitle()); // use this at end of october
-    Logger.log(events[event].getDescription());*/
     Logger.log(testevent[event].getTitle());
     if (testevent[event].getTitle() == "Micheline Zoom Tonus"){
       // write actual code here
@@ -29,20 +41,6 @@ function getCalendarZoomEvent(){
   // search for thursday, get info
   // send to people according to that, remove api calls. 
   // copy/ paste recording link weekly on the google sheets to be sent to clients. 
-}
-
-function getThursday(d) {
-  d = new Date(d);
-  var day = d.getDay(),
-      diff = d.getDate() - day + (day == 0 ? -6:4); // adjust when day is sunday
-  return new Date(d.setDate(diff));
-}
-
-function getFriday(d) {
-  d = new Date(d);
-  var day = d.getDay(),
-      diff = d.getDate() - day + (day == 0 ? -6:5); // adjust when day is sunday
-  return new Date(d.setDate(diff));
 }
 
 function getEmails(){
