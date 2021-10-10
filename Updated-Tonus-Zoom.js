@@ -55,8 +55,8 @@ function sendMeetingDetailsUsers(){
   Logger.log(zumba_clients_emails);
   
   var client_emails_string = zumba_clients_emails.join(); 
-  //var recipientsTO = client_emails_string; // only uncomment when I want to actually send an email
-  var recipientsTO = "clauisawesome@gmail.com"; // only uncomment when I want to actually send an email
+  var recipientsTO = client_emails_string; // only uncomment when I want to actually send an email
+  //var recipientsTO = "clauisawesome@gmail.com"; // only uncomment when I want to actually send an email
   var email_subject = "Micheline Thursday / Jeudi Tonus Totale 🏋️ Zoom Workout";
   var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class</h1><p>Bonjour la Gang de Tonus Totale,<br><br> Je m'appelle Claudia Feochari\
                                 et je suis la fille de Micheline et la gérante IT du Zoom Tonus Totale avec Micheline. Je vous envois ce courriel pour vous rappeler\
@@ -197,11 +197,11 @@ function sendRecordingToUsers(){
   var email_not_payed = email_body_fr + email_body_en;
   
   // UNCOMMENT BELOW FOR AUTOMATION
- /*MailApp.sendEmail({
+ MailApp.sendEmail({
     to: recipientsTO,
     subject: email_subject,
     htmlBody: email_not_payed
-  });*/
+  });
 }
 
 

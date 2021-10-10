@@ -55,8 +55,8 @@ function getFriday(d) {
     zumba_clients_emails.push('clauisawesome@gmail.com'); // here
   
     var client_emails_string = zumba_clients_emails.join();
-    //var recipientsTO = client_emails_string;
-    var recipientsTO = "clauisawesome@gmail.com"; // only uncomment when I want to actually send an email
+    var recipientsTO = client_emails_string;
+    //var recipientsTO = "clauisawesome@gmail.com"; // only uncomment when I want to actually send an email
     var email_subject = "Micheline Friday Zumba Zoom Workout"; // Change to Micheline Friday Zumba Zoom Workout
     var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class</h1><br/><br/>Bonjour la Gang de Zumba,<br><br> Je m'appelle Claudia Feochari et je\
                                 suis la fille de Micheline et la gérante IT du Zoom Zumba avec Micheline. Je vous envois ce courriel pour vous rappeler qu'il y aura un\
@@ -193,11 +193,11 @@ function getFriday(d) {
     var email_not_payed = email_body_fr + email_body_en;
     
     // UNCOMMENT BELOW FOR AUTOMATION
-   /*MailApp.sendEmail({
+   MailApp.sendEmail({
       to: recipientsTO,
       subject: email_subject,
       htmlBody: email_not_payed
-    });*/
+    });
   }
   
   
