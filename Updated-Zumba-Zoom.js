@@ -2,66 +2,140 @@ function getCalendarZoomEvent(){
     // look at calendar and get event info.
     // getting my email's calendar and events
     var clau_calendar = CalendarApp.getCalendarById("clauisawesome@gmail.com"); 
-    var thurs_date_object = getThursday(new Date()).toString(); // Ex: Thurs oct 7
+    var sat_date_object = getSaturday(new Date()).toString(); // Ex: Thurs oct 7
     var fri_date_object = getFriday(new Date()).toString(); // Ex: Fri oct 8
-    var thurs_date = thurs_date_object.split(" ");
+    var sat_date = sat_date_object.split(" ");
     var fri_date = fri_date_object.split(" ");
-    var events = clau_calendar.getEvents(new Date(thurs_date[1] + " "+ thurs_date[2] + " "+ thurs_date[3]), new Date(fri_date[1] + " "+ fri_date[2] + " "+ fri_date[3]));
-    var testevent = clau_calendar.getEvents(new Date("Nov 5 2021"), new Date("Nov 6 2021"));
+    var events = clau_calendar.getEvents(new Date(fri_date[1] + " "+ fri_date[2] + " "+ fri_date[3]), new Date(sat_date[1] + " "+ sat_date[2] + " "+ sat_date[3]));
     var zoom_meeting = [];
     
-    for (var event = 0; event < testevent.length;event++){
-      /*Logger.log(events[event].getTitle()); // use this at end of october
-      Logger.log(events[event].getDescription());*/
-      Logger.log(testevent[event].getTitle());
-      if (testevent[event].getTitle() == "Micheline Zoom Zumba"){
-        // write actual code here
-        var meeting_link = testevent[event].getDescription().split("Meeting")[1];
-        var split1 = testevent[event].getDescription().split("Meeting ID:")[1];
+    for (var event = 0; event < events.length;event++){
+      Logger.log(events[event].getTitle());
+      if (events[event].getTitle() == "Micheline Zoom Zumba"){
+        var meeting_link = events[event].getDescription().split("Meeting")[1];
+        var split1 = events[event].getDescription().split("Meeting ID:")[1];
         var meetingid = split1.split("Passcode:")[0].trim(); 
-        var split3 = testevent[event].getDescription().split("Passcode:")[1];
+        var split3 = events[event].getDescription().split("Passcode:")[1];
         var password = split3.split("One tap mobile")[0].trim();
         zoom_meeting.push(meetingid,password,meeting_link);
       }
-      // Micheline Zoom Zumba
     }
     return zoom_meeting;
-    // search for thursday, get info
-    // send to people according to that, remove api calls. 
-    // copy/ paste recording link weekly on the google sheets to be sent to clients. 
-  }
-  
-  function getThursday(d) {
-    d = new Date(d);
-    var day = d.getDay(),
-        diff = d.getDate() - day + (day == 0 ? -6:4); // adjust when day is sunday
-    return new Date(d.setDate(diff));
   }
   
   function getFriday(d) {
-    d = new Date(d);
-    var day = d.getDay(),
-        diff = d.getDate() - day + (day == 0 ? -6:5); // adjust when day is sunday
-    return new Date(d.setDate(diff));
+    var d = new Date();
+    d.setDate(d.getDate() + (((5 + 7 - d.getDay()) % 7) || 7));
+    Logger.log(d);
+    return d;
   }
   
-  function getEmails(){
+  function getSaturday(d) {
+    var d = new Date();
+    d.setDate(d.getDate() + (((6 + 7 - d.getDay()) % 7) || 7));
+    Logger.log(d);
+    return d;
+  }
+  
+  function getEmailsForRecording(){
+    // Rename this function to something more appropriate
     // Search Gmail for email title related to recording.
     // Log the subject lines of up to the first 50 emails in your Inbox
-    
+  
     var threads = GmailApp.getInboxThreads(0, 10);
+    var message = "";
     for (var i = 0; i < threads.length; i++) {
-      Logger.log(threads[i].getFirstMessageSubject());
+      var test = threads[i].getFirstMessageSubject().split("Cloud Recording");
+      Logger.log(test.length);
+      if(test.length == 2){
+        Logger.log(test);// get cloud recording email
+        // TO DO-> FIGURE OUT
+        // Get the first message in the first thread of your inbox
+        Logger.log(i);
+        message = GmailApp.getInboxThreads(i, 1)[0].getMessages()[0].getPlainBody(); // retrieves message with cloud recording subject. 
+      }
       // Cloud Recording - claudia-france feochari's Personal Meeting Room is now available
       // if contains above, then take that and look inside the email to get info.
       // Take that info and send recording to users ( go to the function below)
     }
+    var split1 = message.split("Copy the link below to share this recording with viewers:")[1];
+    var recording_link = split1.split(" ")[0];
+    Logger.log(recording_link);
+    return recording_link;
     // get link
     // return link
   }
   
   function sendRecordingToUsers(){
+    // MODIFY THIS ONE!!!
     // Send recording details to selected users in excel sheet
+    var recording_link = getEmailsForRecording(); // rename getEmail();
+    var emailsToSend = getEmailsForRecordingSend();
+    
+    var recipientsTO = emailsToSend;
+    
+    var email_subject = "Micheline Friday / Vendredi Zumba 💃 Recording";
+    
+     // REGULAR EMAIL 
+    var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class</h1><p>Bonjour les Filles,<br><br> Je vous envois le lien pour l'enregistrement\
+                                  du cours de Zumba cet apres-midi. Un petit rappel que vous avez 7 jours pour visioner cet enregistrement. Svp envoyez moi un courriel apres d'avoir vu le video.<br>\
+                                  Voici le lien:<br>\
+                                  Lien:" +recording_link +
+                                  "<br> Merci beaucoup et bon weekend,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------";
+    
+    var email_body_en = "<br><br>Hi Girls,<br><br> I am sending you the link for this evening's Zumba recording. Just a small reminder that you have exactly 7 days\
+                                   to view this recording before it gets deleted. Please send me a recording when you watch the video.<br>\
+                                   Here is the link: <br>\
+                                   Lien:" +recording_link+
+                                "<br> Thank you and have a nice weekend,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------"+ 
+                                "</p></body></html>";
+    
+    var email_not_payed = email_body_fr + email_body_en;
+    
+    // UNCOMMENT BELOW FOR AUTOMATION
+   /*MailApp.sendEmail({
+      to: recipientsTO,
+      subject: email_subject,
+      htmlBody: email_not_payed
+    });*/
+  }
+  
+  function getEmailsForRecordingSend(){
+    /*Sends the meeting recording to the pink hilighted recipients */
+    var zumba_clients_emails = [];
+    var recordingsArray = [];
+    var emailsRecording = [];
+    var fri_date_object = getFriday(new Date()); // Ex: Fri oct 8
+    var last_column_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastColumn();
+    var last_row_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastRow();
+    var ss = SpreadsheetApp.getActiveSpreadsheet();
+    var nextFriDate = 0;
+    var dateposition = 0;
+    for(var y=4;y<last_column_number;y++){
+      var date_col = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(1,y).getValue();
+      if(date_col.getMonth() == fri_date_object.getMonth()){ 
+        if(date_col.getDate() == fri_date_object.getDate()){
+          var dateposition = y;
+        }
+    }
+    }
+  
+    var thisFriDate = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(1,dateposition).getValue(); // remove -2 here
+    Logger.log(thisFriDate);
+    for(var x=2;x<last_row_number-17;x++){
+        var backColor= SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(x, dateposition).getBackground().toString();
+        if(backColor=="#ff00ff"){
+          recordingsArray.push(x);
+        }
+    }
+    
+    for (var x=0;x<recordingsArray.length;x++){
+      var recordingEmailstoSend = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(recordingsArray[x],2).getValue().toString();
+      emailsRecording.push(recordingEmailstoSend);
+    }
+    emailsRecording = emailsRecording.filter(Boolean);
+    var zumba_clients_emails = emailsRecording.join();
+    return zumba_clients_emails;
   }
   
   function sendMeetingDetailsUsers(){
@@ -110,23 +184,21 @@ function getCalendarZoomEvent(){
     var email_subject_christmas = "Micheline Tuesday Zumba Christmas Schedule 🎄/ Mardi Zoom Zumba Schedule de Noel 🎄";
     
    
-    var email_christmas_fr =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class Christmas Schedule 🎄</h1><p>Bonjour les filles, alors juste un petit rappel que Mardi apres midi le 29 Decembre a 5:30Pm on a le cours de Zumba.\
+    /*var email_christmas_fr =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class Christmas Schedule 🎄</h1><p>Bonjour les filles, alors juste un petit rappel que Mardi apres midi le 29 Decembre a 5:30Pm on a le cours de Zumba.\
                                  Merci ❤ et a Mardi,"+"<br>"+"Claudia Feochari"+"<br></p></body></html>";
   
     var email_christmas_en =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class Christmas Schedule 🎄</h1><p>Hi girls! Just a small reminder that the Zumba class will be taking place Tuesday afternoon 29 Decembre at 5:30PM.\
                                  Thank you ❤ and see you Tuesday"+"<br>"+"Claudia Feochari"+"<br></p></body></html>";
     
     
-    var email_christmas = email_christmas_fr + email_christmas_en + email_not_payed;
+    var email_christmas = email_christmas_fr + email_christmas_en + email_not_payed;*/
   
     MailApp.sendEmail({
       to: recipientsTO,
       subject: email_subject, // usually use this but for christmas we wont
-      //subject: email_subject_christmas, 
-      //htmlBody: email_not_payed // usually use this but for christmas we wont
       htmlBody: email_not_payed 
     });
     
   }
-  
+    
   
