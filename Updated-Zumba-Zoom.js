@@ -1,20 +1,28 @@
-function getThursday(d) {
+function getTuesday(d) {
   var d = new Date();
-  if(d.getDay() == 4){
+  if(d.getDay() == 5){
     d.setDate(d.getDate());
   }
   else{
-    d.setDate(d.getDate() + (((4 + 7 - d.getDay()) % 7) || 7));
+    d.setDate(d.getDate() + (((2 + 7 - d.getDay()) % 7) || 7));
   }
-  
-  //d.setDate(d.getDate() + (((4 + 7 - d.getDay()) % 7) || 7));
-  Logger.log(d);
   return d;
 }
 
-function getFriday(d) {
+function getWednesday(d) {
   var d = new Date();
-  d.setDate(d.getDate() + (((5 + 7 - d.getDay()) % 7) || 7));
+  if(d.getDay() == 5){
+    d.setDate(d.getDate());
+  }
+  else{
+    d.setDate(d.getDate() + (((3 + 7 - d.getDay()) % 7) || 7));
+  }
+  return d;
+}
+
+function getSaturday(d) {
+  var d = new Date();
+  d.setDate(d.getDate() + (((6 + 7 - d.getDay()) % 7) || 7));
   Logger.log(d);
   return d;
 }
@@ -23,16 +31,18 @@ function getCalendarZoomEvent(){
   // look at calendar and get event info.
   // getting my email's calendar and events
   var clau_calendar = CalendarApp.getCalendarById("clauisawesome@gmail.com"); 
-  var thurs_date_object = getThursday(new Date()).toString(); // Ex: Thurs oct 7
-  var fri_date_object = getFriday(new Date()).toString(); // Ex: Fri oct 8
-  var thurs_date = thurs_date_object.split(" ");
+  var sat_date_object = getWednesday(new Date()).toString(); // Ex: Thurs oct 7
+  var fri_date_object = getTuesday(new Date()).toString(); // Ex: Fri oct 8
+  var sat_date = sat_date_object.split(" ");
   var fri_date = fri_date_object.split(" ");
-  var events = clau_calendar.getEvents(new Date(thurs_date[1] + " "+ thurs_date[2] + " "+ thurs_date[3]), new Date(fri_date[1] + " "+ fri_date[2] + " "+ fri_date[3]));
-  //var testevent = clau_calendar.getEvents(new Date("Nov 4 2021"), new Date("Nov 5 2021"));
+  Logger.log(fri_date);
+  var events = clau_calendar.getEvents(new Date(fri_date[1] + " "+ fri_date[2] + " "+ fri_date[3]), new Date(sat_date[1] + " "+ sat_date[2] + " "+ sat_date[3]));
+  var testevent = clau_calendar.getEvents(new Date("Nov 5 2021"), new Date("Nov 6 2021"));
   var zoom_meeting = [];
   
   for (var event = 0; event < events.length;event++){
-    if (events[event].getTitle() == "Micheline Zoom Tonus"){
+    Logger.log(events[event].getTitle());
+    if (events[event].getTitle() == "Micheline Zoom Zumba"){
       var meeting_link = events[event].getDescription().split("Meeting")[1];
       var split1 = events[event].getDescription().split("Meeting ID:")[1];
       var meetingid = split1.split("Passcode:")[0].trim(); 
@@ -41,82 +51,79 @@ function getCalendarZoomEvent(){
       zoom_meeting.push(meetingid,password,meeting_link);
     }
   }
-  
   return zoom_meeting;
   // search for thursday, get info
   // send to people according to that, remove api calls. 
   // copy/ paste recording link weekly on the google sheets to be sent to clients. 
 }
 
+
 function sendMeetingDetailsUsers(){
   // Send meeting details to selected users in excel sheet
   var email_details = getCalendarZoomEvent();
-  Logger.log(email_details);
   var zumba_clients_emails = [];
   var last_row_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastRow();
 
-  for(var x=2;x<last_row_number-1;x++){
+  for(var x=2;x<last_row_number-17;x++){
      zumba_clients_emails.push(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(x, 2).getValue());
   }
-  zumba_clients_emails= zumba_clients_emails.filter(Boolean);
-  zumba_clients_emails.push('clauisawesome@gmail.com');
-  Logger.log(zumba_clients_emails);
-  
-  var client_emails_string = zumba_clients_emails.join(); 
-  var recipientsTO = client_emails_string; // only uncomment when I want to actually send an email
-  //var recipientsTO = "clauisawesome@gmail.com"; // only uncomment when I want to actually send an email
-  var email_subject = "Micheline Thursday / Jeudi Tonus Totale 🏋️ Zoom Workout";
-  var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class</h1><p>Bonjour la Gang de Tonus Totale,<br><br> Je m'appelle Claudia Feochari\
-                                et je suis la fille de Micheline et la gérante IT du Zoom Tonus Totale avec Micheline. Je vous envois ce courriel pour vous rappeler\
-                                qu'il y aura un Cours de Tonus Totale Zoom virtuel ce Jeudi à 17:30 pm. Vous pouvez aller en ligne à partir de 17:15 pm.\
-                                Vous avez besoin deux poids (2 bouteilles remplit d’eau si vous n’avez pas de poids), une chaise, un tapis ou une serviette pour\
-                                faire les abdos au sol.<br> On apprécie un donation de $6 pour ce cours car on donne un cours complet et de haute qualité d'une heure\
-                               avec Zoom Pro. Si vous faites le Zumba aussi Vendredi à 5:30pm la même semaine, le prix sera 12$ qui inclut les deux cours.\
-                               <br>Le courriel pour le e-transfer : <br> claudia.f.feochari@hotmail.com <br>Pour le e-transfer pour le cours de Tonus Seulement, SVP \
-                               utilise le mot de passe TONUS1 avec tous les lettres en majuscule.<br>Si vous faites les deux cours, Tonus et Zumba, SVP utilise le mot\
-                               de passe ZUMBA avec tous les lettres en majuscule. Si cela ne marche pas, utilise ZUMBAZUMBA.<br>Si vous avez des questions concernant\
-                               le e-transfer, envoyez moi un courriel.\
-                              Je pourrais vous donner de l'assistance sur un appel Zoom si vous avez des questions. J'ai fait cela avec quelqu'un déjà, n'hésitez pas\
-                              de me contacter par courriel si vous avez des questions.<br>Voici les détails pour le meeting Zoom ce Jeudi:<br>"+"Meeting Id: "
-                              +email_details[0]+ "<br> Password: " +email_details[1]+"<br>" + "Lien:" + email_details[2] +
-                              "<br> Merci beaucoup et je vous vois Jeudi 😍,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------";
-  
-  var email_body_en = "<br><br>Hi Everyone,<br><br>I'm Claudia Feochari, Micheline's daughter and Zoom Tonus Total with Micheline IT Manager. I am emailing you\
-                              to remind you that a Tonus Total class is going to occur in the living room this Thursday at 17:30pm. You can come on to the meeting at\
-                              17:15pm. For the Toning class, you will need weights if you have if not 2 water bottles filled up with water will do. You will also need\
-                              a chair, a mat if you have if not a towel so you can do the ab workouts on the floor. <br>We would highly appreciate a 6$ donation for this\
-                              week as we are giving you the real full 1 hour Tonus Total experience with Zoom Pro. If you decide to partake in Zumba at 5:30pm on Fridays,\
-                              the price is 12$ which includes both classes Tonus Total as well as Zumba.<br>Please e-transfer the money to:\
-                              <br> claudia.f.feochari@hotmail.com<br>For the e-transfer for tonus ONLY, please use the password TONUS1 with all capital letters.<br>\
-                              If you decide to use both Tonus and Zumba, please use the password ZUMBA with all capital letters. If that does not work, please use\
-                              the password ZUMBAZUMBA.<br>Please let me know if you are having issues with the e-transfer, I have provided live assistance for someone\
-                              before so feel free to email me if you are having difficulties as I am willing to provide live assistance in the form of a Zoom call for this.\
-                             .<br>Here are the details for Thursday’s Meeting: <br>"+"Meeting Id: "+email_details[0]+ "<br> Password: " +email_details[1]+"<br>" +
-                              "Meeting Link:" + email_details[2] +
-                              "<br> Thank you and see you Thursday 😍,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------"+ 
-                              "</p></body></html>";
-  var email_subject_christmas = "Micheline Thursday Tonus Totale 🏋️ Zoom Workout";
-  
- /* 
- CHRISTMAS SPECIAL!!!
- var email_body_not_payed_fr =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class Christmas Schedule 🎄</h1><p>Bonjour les filles, alors juste un petit rappel que demain soir a 5:30 on a le. cours de Tonus.\
-                               J'ai envoye le courriel maintenant pour demain. N'oubliez pas que le cours est demain et PAS JEUDI car c'est la veille de noel ce jeudi. La meme chose la semaine\
-                               prochaine, le tonus est lundi a 5:30 car jeudi est la veille de nouvelle annee. Merci ❤ et a demain,"+"<br>"+"Claudia Feochari"+"<br></p></body></html>";
-  var email_body_not_payed_en =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class Christmas Schedule 🎄</h1><p>Hi girls! Just a small reminder that the Tonus class will be taking place tomorrow evening at 5:30 PM\
-                               and not Thursday at 5:30PM since it is Christmas Eve.  The same thing applies next week , the class will be Monday too since Thursday is New years eve. \
-                               Thank you ❤ and see you tomorrow"+"<br>"+"Claudia Feochari"+"<br></p></body></html>";*/
+  zumba_clients_emails= zumba_clients_emails.filter(Boolean)
+  zumba_clients_emails.push('clauisawesome@gmail.com'); // here
 
- 
-  var email = email_body_fr + email_body_en;
-  Logger.log(email);
+  var client_emails_string = zumba_clients_emails.join();
+  var recipientsTO = client_emails_string;
+  //var recipientsTO = "clauisawesome@gmail.com"; // only uncomment when I want to actually send an email
+  var email_subject = "Micheline Tuesday Zumba Christmas Schedule 🎄/ Mardi Zoom Zumba Schedule de Noel 🎄"; // Change to Micheline Friday Zumba Zoom Workout
+  var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class</h1><br/><br/>Bonjour la Gang de Zumba,<br><br> Je m'appelle Claudia Feochari et je\
+                              suis la fille de Micheline et la gérante IT du Zoom Zumba avec Micheline. Je vous envois ce courriel pour vous rappeler qu'il y aura un\
+                              Zumba Zoom virtuel ce Mardi à 5:30 PM. Vous pouvez aller en ligne a 5:15PM. <br> On apprécie un donation de $6 pour ce cours car on paye\
+                              pour le Zoom Pro pour que on peut vous donner un cours complet et de haute qualité d'une heure avec Zoom Pro. Si vous faites le Tonus\
+                              Totale la semaine prochaine, le prix est réduit et sera 12$ qui inclut les deux cours pour la semaine prochaine. Envois moi un courriel\
+                              si vous êtes intéressé de participer au Tonus la semaine prochaine si vous n’aviez pas faites cela encore.<br>Le courriel pour le\
+                              e-transfer de $6  :claudia.f.feochari@hotmail.com<br>Pour le e-transfer, SVP utilise le mot de passe ZUMBA avec tous les lettres en\
+                              majuscule. Si cela ne marche pas, utilise ZUMBAZUMBA.<br>Si vous avez des questions concernant le e-transfer, envoyez moi un courriel.\
+                              Je pourrais vous donner de l'assistance sur un appel Zoom si vous avez des questions. J'ai fait cela avec quelqu'un déjà, n'hésitez pas\
+                              de me contacter par courriel si vous avez des questions.<br>Voici les détails pour le meeting Zoom ce Vendredi:<br>"+"Meeting Id: "
+                              +email_details[0]+ "<br> Password: " +email_details[1]+"<br>" + "Lien:" + email_details[2] +
+                              "<br> Merci beaucoup et je vous vois Vendredi 😍,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------";
   
+  var email_body_en = "<br><br>Hi Everyone,<br><br>I'm Claudia Feochari, Micheline's daughter and Zoom Zumba with Micheline IT Manager. I am emailing you to remind\
+                              you that a Zumba class is going to occur in the living room this Tuesday at 5:30PM. You can come on to the meeting at 5:15PM. <br>We would highly appreciate a 5$ donation for this\
+                              week as we are giving you the real full 1 hour Tonus Total experience with Zoom Pro. If you decide to do\
+                              the Tonus Totale class next week, the total amount for both classes next week will be 12$. If you haven’t already let me know you were interested\
+                              in Tonus Totale next week, please send me an email so I could add you to my list. <br> We would highly appreciate a 6$ donation for this week in\
+                              order to cover the cost of using Zoom Pro as we have got it in order to lift the 40 minute limit in order to give you the real full 1hour Zumba\
+                              experience. <br>Please e-transfer the $6 to this email address:\ <br> claudia.f.feochari@hotmail.com<br>For the e-transfer, please use the password\
+                              ZUMBA with all capital letters. If that does not work, please use the password ZUMBAZUMBA.<br>Please let me know if you are having issues with the e-transfer,\
+                              I have provided live assistance for someone last week so feel free to email me if you are having difficulties as I am willing to provide live assistance in the\
+                              form of a Zoom call for this.<br>Here are the details for Friday’s Meeting:<br>" +"Meeting Id: "+email_details[0]+ "<br> Password: " +email_details[1]+"<br>" +
+                              "Meeting Link:" + email_details[2] +
+                              "<br> Thank you and see you Friday 😍,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------"+ 
+                              "</p></body></html>";
+  var email_not_payed = email_body_fr + email_body_en;
+  var email_subject_christmas = "Micheline Tuesday Zumba Christmas Schedule 🎄/ Mardi Zoom Zumba Schedule de Noel 🎄";
+  
+  Logger.log(email_not_payed);
+  
+ 
+  /*var email_christmas_fr =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class Christmas Schedule 🎄</h1><p>Bonjour les filles, alors juste un petit rappel que Mardi apres midi le 29 Decembre a 5:30Pm on a le cours de Zumba.\
+                               Merci ❤ et a Mardi,"+"<br>"+"Claudia Feochari"+"<br></p></body></html>";
+
+  var email_christmas_en =   "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class Christmas Schedule 🎄</h1><p>Hi girls! Just a small reminder that the Zumba class will be taking place Tuesday afternoon 29 Decembre at 5:30PM.\
+                               Thank you ❤ and see you Tuesday"+"<br>"+"Claudia Feochari"+"<br></p></body></html>";
+  
+  
+  var email_christmas = email_christmas_fr + email_christmas_en + email_not_payed; // HERE WAS THE OLD ENDING OF QUOTE FROM LINE 95*/
+
   MailApp.sendEmail({
     to: recipientsTO,
     subject: email_subject, // usually use this but for christmas we wont
-    htmlBody: email, // usually use this but for christmas we wont
+    htmlBody: email_not_payed 
   });
+
   
 }
+  
 
 function getEmailsForRecording(){
   // Rename this function to something more appropriate
@@ -140,14 +147,12 @@ function getEmailsForRecording(){
   return recording_link;
 }
 
-
 function getEmailsForRecordingSend(){
   /*Sends the meeting recording to the pink hilighted recipients */
   var zumba_clients_emails = [];
   var recordingsArray = [];
   var emailsRecording = [];
-  var fri_date_object = getThursday(new Date()); // Ex: Fri oct 8
-  Logger.log(fri_date_object);
+  var fri_date_object = getTuesday(new Date()); // Ex: Fri oct 8
   var last_column_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastColumn();
   var last_row_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastRow();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -162,26 +167,24 @@ function getEmailsForRecordingSend(){
   }
   }
 
-  var thisFriDate = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(2,dateposition).getValue(); // remove -2 here
+  var thisFriDate = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(1,dateposition).getValue(); // remove -2 here
   Logger.log(thisFriDate);
-  for(var x=2;x<last_row_number-17;x++){
+  for(var x=2;x<last_row_number-18;x++){
       var backColor= SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(x, dateposition).getBackground().toString();
       if(backColor=="#ff00ff"){
-        recordingsArray.push(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(x, 2).getValue());
-        Logger.log(recordingsArray);
+        recordingsArray.push(x);
       }
   }
   
-  /*for (var x=0;x<recordingsArray.length;x++){
-    //var recordingEmailstoSend = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(recordingsArray[x],2).getValue().toString();
+  for (var x=0;x<recordingsArray.length;x++){
+    var recordingEmailstoSend = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(recordingsArray[x],2).getValue().toString();
     emailsRecording.push(recordingEmailstoSend);
-  }*/
-  var emailsRecording = recordingsArray.filter(Boolean);
-  Logger.log("HAHA"+ emailsRecording);
+  }
+  emailsRecording = emailsRecording.filter(Boolean);
   var zumba_clients_emails = emailsRecording.join();
-  Logger.log("ICI"+zumba_clients_emails);
   return zumba_clients_emails;
 }
+
 
 function sendRecordingToUsers(){
   // Send recording details to selected users in excel sheet
@@ -189,23 +192,21 @@ function sendRecordingToUsers(){
   var emailsToSend = getEmailsForRecordingSend();
   
   var recipientsTO = emailsToSend;
-  Logger.log("HERE"+ emailsToSend);
   
-  var email_subject = "Micheline Thursday / Jeudi Tonus Totale 🏋️ Recording";
+  var email_subject = "Micheline Friday / Vendredi Zumba 💃 Recording";
   
-  var email_body_tonus = "";
-  
-  var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class</h1><p>Bonjour les amis,<br><br> Je vous envois le lien pour l'enregistrement\
-                                du cours de Tonus ce soir. Un petit rappel que vous avez 7 jours pour visioner cet enregistrement. Svp envoyez moi un courriel apres d'avoir vu le video.<br>\
+  // REGULAR EMAIL 
+  var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Zumba Class</h1><p>Bonjour les Filles,<br><br> Je vous envois le lien pour l'enregistrement\
+                                du cours de Zumba cet apres-midi. Un petit rappel que vous avez 7 jours pour visioner cet enregistrement. Svp envoyez moi un courriel apres d'avoir vu le video.<br>\
                                 Voici le lien:<br>\
                                 Lien:" +recording_link +
-                                "<br> Merci beaucoup et bonne semaine,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------";
+                                "<br> Merci beaucoup et bon weekend,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------";
   
-  var email_body_en = "<br><br>Hi Everyone,<br><br> I am sending you the link for tonight's Tonus recording. Just a small reminder that you have exactly 7 days\
+  var email_body_en = "<br><br>Hi Girls,<br><br> I am sending you the link for this evening's Zumba recording. Just a small reminder that you have exactly 7 days\
                                  to view this recording before it gets deleted. Please send me a recording when you watch the video.<br>\
                                  Here is the link: <br>\
-                                 Lien:" +recording_link  +
-                              "<br> Thank you and have a nice week,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------"+ 
+                                 Lien:" +recording_link+
+                              "<br> Thank you and have a nice weekend,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------"+ 
                               "</p></body></html>";
   
   var email_not_payed = email_body_fr + email_body_en;

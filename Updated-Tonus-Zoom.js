@@ -1,6 +1,13 @@
 function getThursday(d) {
   var d = new Date();
-  d.setDate(d.getDate() + (((4 + 7 - d.getDay()) % 7) || 7));
+  if(d.getDay() == 4){
+    d.setDate(d.getDate());
+  }
+  else{
+    d.setDate(d.getDate() + (((4 + 7 - d.getDay()) % 7) || 7));
+  }
+  
+  //d.setDate(d.getDate() + (((4 + 7 - d.getDay()) % 7) || 7));
   Logger.log(d);
   return d;
 }
@@ -21,10 +28,10 @@ function getCalendarZoomEvent(){
   var thurs_date = thurs_date_object.split(" ");
   var fri_date = fri_date_object.split(" ");
   var events = clau_calendar.getEvents(new Date(thurs_date[1] + " "+ thurs_date[2] + " "+ thurs_date[3]), new Date(fri_date[1] + " "+ fri_date[2] + " "+ fri_date[3]));
-  var testevent = clau_calendar.getEvents(new Date("Nov 4 2021"), new Date("Nov 5 2021"));
+  //var testevent = clau_calendar.getEvents(new Date("Nov 4 2021"), new Date("Nov 5 2021"));
   var zoom_meeting = [];
   
-  for (var event = 0; event < testevent.length;event++){
+  for (var event = 0; event < events.length;event++){
     if (events[event].getTitle() == "Micheline Zoom Tonus"){
       var meeting_link = events[event].getDescription().split("Meeting")[1];
       var split1 = events[event].getDescription().split("Meeting ID:")[1];
@@ -34,6 +41,7 @@ function getCalendarZoomEvent(){
       zoom_meeting.push(meetingid,password,meeting_link);
     }
   }
+  
   return zoom_meeting;
   // search for thursday, get info
   // send to people according to that, remove api calls. 
@@ -100,6 +108,7 @@ function sendMeetingDetailsUsers(){
 
  
   var email = email_body_fr + email_body_en;
+  Logger.log(email);
   
   MailApp.sendEmail({
     to: recipientsTO,
@@ -137,7 +146,8 @@ function getEmailsForRecordingSend(){
   var zumba_clients_emails = [];
   var recordingsArray = [];
   var emailsRecording = [];
-  var fri_date_object = getFriday(new Date()); // Ex: Fri oct 8
+  var fri_date_object = getThursday(new Date()); // Ex: Fri oct 8
+  Logger.log(fri_date_object);
   var last_column_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastColumn();
   var last_row_number = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getLastRow();
   var ss = SpreadsheetApp.getActiveSpreadsheet();
@@ -152,21 +162,24 @@ function getEmailsForRecordingSend(){
   }
   }
 
-  var thisFriDate = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(1,dateposition).getValue(); // remove -2 here
+  var thisFriDate = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(2,dateposition).getValue(); // remove -2 here
   Logger.log(thisFriDate);
   for(var x=2;x<last_row_number-17;x++){
       var backColor= SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(x, dateposition).getBackground().toString();
       if(backColor=="#ff00ff"){
-        recordingsArray.push(x);
+        recordingsArray.push(SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(x, 2).getValue());
+        Logger.log(recordingsArray);
       }
   }
   
-  for (var x=0;x<recordingsArray.length;x++){
-    var recordingEmailstoSend = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(recordingsArray[x],2).getValue().toString();
+  /*for (var x=0;x<recordingsArray.length;x++){
+    //var recordingEmailstoSend = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("2021").getRange(recordingsArray[x],2).getValue().toString();
     emailsRecording.push(recordingEmailstoSend);
-  }
-  emailsRecording = emailsRecording.filter(Boolean);
+  }*/
+  var emailsRecording = recordingsArray.filter(Boolean);
+  Logger.log("HAHA"+ emailsRecording);
   var zumba_clients_emails = emailsRecording.join();
+  Logger.log("ICI"+zumba_clients_emails);
   return zumba_clients_emails;
 }
 
@@ -176,21 +189,22 @@ function sendRecordingToUsers(){
   var emailsToSend = getEmailsForRecordingSend();
   
   var recipientsTO = emailsToSend;
+  Logger.log("HERE"+ emailsToSend);
   
   var email_subject = "Micheline Thursday / Jeudi Tonus Totale 🏋️ Recording";
   
   var email_body_tonus = "";
   
-  var email_body_not_payed_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class</h1><p>Bonjour les amis,<br><br> Je vous envois le lien pour l'enregistrement\
+  var email_body_fr = "<!DOCTYPE html><html><body><h1>Micheline Zoom Tonus Class</h1><p>Bonjour les amis,<br><br> Je vous envois le lien pour l'enregistrement\
                                 du cours de Tonus ce soir. Un petit rappel que vous avez 7 jours pour visioner cet enregistrement. Svp envoyez moi un courriel apres d'avoir vu le video.<br>\
                                 Voici le lien:<br>\
-                                Lien:" +recordingLink +
+                                Lien:" +recording_link +
                                 "<br> Merci beaucoup et bonne semaine,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------";
   
-  var email_body_not_payed_en = "<br><br>Hi Everyone,<br><br> I am sending you the link for tonight's Tonus recording. Just a small reminder that you have exactly 7 days\
+  var email_body_en = "<br><br>Hi Everyone,<br><br> I am sending you the link for tonight's Tonus recording. Just a small reminder that you have exactly 7 days\
                                  to view this recording before it gets deleted. Please send me a recording when you watch the video.<br>\
                                  Here is the link: <br>\
-                                 Lien:" +recordingLink +
+                                 Lien:" +recording_link  +
                               "<br> Thank you and have a nice week,"+"<br>"+"Claudia Feochari"+"<br><br>-----------------------------------------------------------------------------------------------------------------"+ 
                               "</p></body></html>";
   
