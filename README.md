@@ -1,4 +1,4 @@
-# Micheline Zumba Automation Project
+# Micheline Exercise Automation Project
 
 The purpose of creating this automation project was to for the easier coordination between clients and employees for the bi-weekly classes offered by Micheline
 virtually on Zoom. The creation of this automation utilizes the Zoom Api as well as Google Sheets. 
