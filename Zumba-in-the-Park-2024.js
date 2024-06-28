@@ -51,14 +51,14 @@ function sendToMultiple() {
 
   var email_subject = "💃 Micheline Zumba au Parc 🌳";
 
-var email_zumba_outdoors_fr = "<!DOCTYPE html><html><body style='font-family: Arial, sans-serif; color: #4A4A4A;'>\
+  var email_zumba_outdoors_fr = "<!DOCTYPE html><html><body style='font-family: Arial, sans-serif; color: #4A4A4A;'>\
 <br/><p style='font-size: 18px;'>Bonjour la Gang de Zumba,</p>\
-<p style='font-size: 18px;'>Je m'appelle <strong>Claudia Feochari</strong> et je suis la fille de Micheline et la gérante IT du <span style='color: #E67E22;'>Zumba</span> avec Micheline. Je vous envoie ce courriel pour vous rappeler qu'il y aura un <span style='color: #3498DB;'>Zumba au <strong>Parc Outremont</strong></span> ce <strong>Mardi le " + formatDateFr(formattedDateFr) + " à 18h30 </strong>.</p>\
+<p style='font-size: 18px;'>Je m'appelle <strong>Claudia Feochari</strong> et je suis la fille de Micheline et la gérante IT du <span style='color: #E67E22;'>Zumba</span> avec Micheline. Je vous envoie ce courriel pour vous rappeler qu'il y aura un <span style='color: #3498DB;'>Zumba au <strong>Parc Outremont</strong></span> ce <strong>Mardi le " + formatDateFr(formattedDateFr) + " à 18h30</strong>.</p>\
 <p style='font-size: 18px;'>L'adresse du Parc est la suivante:</p>\
 <p style='font-size: 18px; font-weight: bold;'>1172, avenue Saint-Viateur (coin de Bloomfield) <br>Montréal (Québec) H2V 1Z1</p>\
 <p style='font-size: 18px;'>Le cours aura lieu près de la statue <strong>Gloria Victoribvs</strong>. On apprécie une donation pour ce cours mais vous pouvez donner ce que vous voulez! Le courriel pour le e-transfer : <a href='mailto:claudia.f.feochari@hotmail.com' style='color: #8E44AD;'>claudia.f.feochari@hotmail.com</a>. Vous pouvez également donner de l'argent comptant le jour de la classe. Pour le e-transfer, <strong>SVP</strong> utilisez le mot de passe <strong style='color: #E74C3C;'>ZUMBA</strong> avec toutes les lettres en majuscules. Si cela ne marche pas, utilisez <strong style='color: #E74C3C;'>ZUMBAZUMBA</strong>.</p>\
 <p style='font-size: 18px;'></p>\
-<br/><p style='font-size: 18px; color: red;'>Important*</p>\
+<br/><p style='font-size: 18px; color: red;'>*Important*: Veuillez confirmer votre présence en répondant à cet email ou en envoyant un SMS à ce numéro: (514) 895-1393</p>\
 <p style='font-size: 18px;'>Merci beaucoup et je vous vois <span style='color: #E67E22;'>Mardi</span> 😍,</p>\
 <p style='font-size: 18px;'><strong>Claudia Feochari</strong></p>\
 <br/><p style='font-size: 18px;'>Merci et Zumba L💟VE</p>\
@@ -71,11 +71,13 @@ var email_zumba_outdoors_en = "<!DOCTYPE html><html><body style='font-family: Ar
 <p style='font-size: 18px; font-weight: bold;'>1172, avenue Saint-Viateur (corner of Bloomfield) <br>Montreal (Quebec) H2V 1Z1</p>\
 <p style='font-size: 18px;'>The class will be held near the statue <strong>Gloria Victoribvs</strong>. We appreciate a donation for this class, but you can give what you want! The email for the e-transfer is: <a href='mailto:claudia.f.feochari@hotmail.com' style='color: #8E44AD;'>claudia.f.feochari@hotmail.com</a>. You can also give cash on the day of the class. For the e-transfer, <strong>please</strong> use the password <strong style='color: #E74C3C;'>ZUMBA</strong> with all letters in uppercase. If that doesn't work, use <strong style='color: #E74C3C;'>ZUMBAZUMBA</strong>.</p>\
 <p style='font-size: 18px;'></p>\
-<br/><p style='font-size: 18px; color: red;'>Important*</p>\
+<br/><p style='font-size: 18px; color: red;'>*Important*: Please confirm your presence by replying to this email or texting this number: (514) 895-1393</p>\
 <p style='font-size: 18px;'>Thank you very much and I will see you <span style='color: #E67E22;'>Tuesday</span> 😍,</p>\
 <p style='font-size: 18px;'><strong>Claudia Feochari</strong></p>\
 <br/><p style='font-size: 18px;'>Merci et Zumba L💟VE</p>\
 <br><br>-----------------------------------------------------------------------------------------------------------------</body></html>";
+
+
 
   // Log email content for debugging
   Logger.log("Email content (French): " + email_zumba_outdoors_fr);
@@ -109,10 +111,7 @@ var email_zumba_outdoors_en = "<!DOCTYPE html><html><body style='font-family: Ar
   };
 
   MailApp.sendEmail({
-    //to: client_emails_string,
-    //to: "sofvengy@hotmail.com",
-    //to: "michepietracupa@hotmail.com",
-    to: "clauisawesome@gmail.com",
+    to: client_emails_string,
     subject: email_subject,
     htmlBody: email_body,
     inlineImages: inlineImages
